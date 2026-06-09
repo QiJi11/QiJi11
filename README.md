@@ -1,55 +1,32 @@
-# Hi there, I'm QiJi11 👋
+# Hi there, I'm QiJi11
 
-一个立志于 **AI 应用开发 / 智能体研发 / LLM 后端工程** 的开发者。目前专注于 RAG、Multi-Agent 协作、智能对话工作流与多模态应用的工程化落地。
+专注于 AI 应用后端、RAG 知识库问答和 Agent 工具调用链路的开发实践，主要使用 Python、FastAPI、LangGraph、ChromaDB 与 OpenAI-compatible API 构建可演示的后端 Demo。
 
-📬 **联系方式**：tianhe200300@163.com
+## 技术方向
 
----
+- AI 应用后端：Python、FastAPI、async/await、SSE、Pydantic
+- RAG：文档分块、SentenceTransformers、ChromaDB、TopK 检索、CrossEncoder rerank、Prompt 注入
+- Agent：Tool Schema、工具注册、工具执行、LangGraph 状态图、异常降级
+- 工程实践：Router / Service / Store 分层、接口文档、日志排查、Git
 
-### 🛠️ 技术栈 (Tech Stack)
+## 核心项目
 
-- **AI & 大模型相关**：FastAPI / RAG (Retrieval-Augmented Generation) / Embedding / ChromaDB (向量库) / ReAct Agent / LangChain / LangGraph (工作流编排) / Prompt 调优 / DeepSeek / Claude API 对接
-- **后端工程开发**：Python / Java (Spring Boot, Spring Security, MyBatis) / Go / MySQL (SQL 优化) / Redis (多维缓存, 分布式锁) / NATS (消息队列)
-- **前端与桌面端**：TypeScript / React / Electron (桌面端跨平台) / Ant Design / Vue
-- **开发与部署**：Git / Docker / Nginx (反向代理, 负载均衡) / Cursor / Claude Code
+### [agent-flow](https://github.com/QiJi11/agent-flow)
 
----
+智能体工具调用后端 Demo，围绕 Agent 工具选择、参数解析、工具执行、结果回传和异常降级进行实现。
 
-### 🚀 核心项目 (Core Projects)
+- 提供 `/api/v1/agent/run` 与 `/api/v1/agent/langchain/run` 两个执行端点，对照基础执行循环与 LangGraph 编排方式。
+- 基于工具注册中心维护 RAG 检索工具，整理 Tool Schema、参数校验和 System Prompt 注入逻辑。
+- 记录工具调用步骤和中间结果，便于排查工具调用失败、参数缺失和循环卡住等问题。
 
-#### 🖼️ [screenshot-ocr-demo](https://github.com/QiJi11/screenshot-ocr-demo)
-**基于 Electron + FastAPI + RapidOCR + LLM 的多模态截图与大模型智能分析助手**
-- **技术栈**：Electron + React + FastAPI + RapidOCR + SSE 流式响应 + HTTPX 异步 + Ant Design
-- **核心实现**：
-  - 支持全屏与窗口截图，本地采用 RapidOCR 进行高性能文字提取，OCR 结果秒级识别并自动复制至剪贴板。
-  - **大模型 AI 智能分析**：打通多模态数据闭环，接入 OpenAI / DeepSeek API 兼容接口，基于 SSE (Server-Sent Events) 实现打字机式异步 Token 实时流式输出，首字延迟低于 500ms。
-  - **工作流场景适配**：内置 “💻 代码报错解释/修复”、“🌐 中英双向智能翻译”、“📊 结构化 Markdown 表格” 和 “📝 文本核心纪要生成” 等 Prompt 模版。
-  - **安全与配置持久化**：新增大模型配置管理，API 密钥本地持久化至 AppData 中，彻底杜绝密钥硬编码上传至开源仓库的安全风险。
+### [rag-engine](https://github.com/QiJi11/rag-engine)
 
-#### 🔍 [rag-engine](https://github.com/QiJi11/rag-engine)
-**面向企业知识库的 RAG (检索增强生成) 问答引擎**
-- **技术栈**：Python + FastAPI + ChromaDB + OpenAI Embedding + DeepSeek API
-- **核心实现**：
-  - 实现文档切块 (Chunking) 与余弦相似度检索，支持 RAG 增强回答与普通直答模式动态切换。
-  - 基于 Redis 实现多轮会话上下文滑动窗口（保留最近 8 轮），超出长度自动裁剪，优化 Token 消耗。
+RAG 知识库问答后端 Demo，实现文档上传、分块、向量检索、rerank、Prompt 注入和 SSE 流式回答链路。
 
-#### 🤖 [agent-flow](https://github.com/QiJi11/agent-flow)
-**基于 ReAct 范式的轻量级智能体引擎**
-- **技术栈**：Python + FastAPI + ReAct推理循环 + 动态工具注册
-- **核心实现**：
-  - 从零手写 Thought → Action → Observation 推理决策循环，支持最大迭代次数限制与降级直答。
-  - 采用装饰器模式实现工具的动态注册（如 RAG 检索、外部 API），支持在运行时灵活扩展 Agent 的能力。
+- 实现 `/api/v1/upload` 文档入库接口，按 512 字符分块与 50 字符 overlap 处理 TXT / PDF 文档，并写入 ChromaDB。
+- 基于 `all-MiniLM-L6-v2` 完成向量检索，再用 CrossEncoder rerank 选出 Top-3 片段注入 Prompt。
+- 实现 `/api/v1/chat` 与 `/api/v1/chat/stream`，支持 `use_rag` 切换知识库增强回答和普通直答，并通过 `session_id` 维护多轮会话。
 
-#### 💬 [knowledge-qa-platform](https://github.com/QiJi11/knowledge-qa-platform)
-**智能 AI 知识问答平台 (Spring AI / SSE)**
-- **技术栈**：Spring Boot 3.2 + Spring AI + Redis + SSE + Vue
-- **核心实现**：
-  - 基于 Spring AI 接入大模型，通过 SSE (Server-Sent Events) 实现打字机流式输出。
-  - 使用 Guava BloomFilter 过滤无效请求，结合 Redis 缓存（TTL 1h）与 LTRIM 滑动窗口进行会话管理。
+## 联系方式
 
-#### 🌐 [echo-community](https://github.com/QiJi11/echo-community)
-**高并发社交互动社区后端服务**
-- **技术栈**：Spring Boot 3.2 + MyBatis + Redis + Spring Security + Quartz + MySQL
-- **核心实现**：
-  - 设计二级评论系统与点赞/关注功能，使用 Redis ZSet 维护用户关注链及推流时间线。
-  - 使用 Quartz 定时任务结合对数热度公式 `log(like+comment) + time_decay` 进行帖子热度动态排行。
+- Email: tianhe200300@163.com
